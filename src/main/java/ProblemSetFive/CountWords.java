@@ -14,25 +14,27 @@ public class CountWords {
         int chars = 0;
         boolean wuzLastSpace = true;
         
-        for (int i = 0; i > -1; i++) {
+        for (int i = 0; i < 555555555; i++) {
             char nextChar = (char)count.read();
             if (wuzLastSpace == true && nextChar != 0) {
                 words++;
             }
             if (nextChar == ' ' || nextChar == '\n' || nextChar == '\t') {
+                wuzLastSpace = true;
+            } else {
                 wuzLastSpace = false;
             }
-            if (nextChar == 0) {
+            if (nextChar == '￿') {
                 break;
             }
             chars++;
         }
         for (int i = 0; i > -1; i++) {
             String line = count.readLine();
+            lines++;
             if (line == null) {
                 break;
             }
-            lines = i;
             
         }
         int[] lwc = {lines, words, chars};/*lines words characters*/
