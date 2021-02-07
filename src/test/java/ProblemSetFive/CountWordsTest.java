@@ -8,32 +8,30 @@ import java.io.IOException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import ProblemSetFive.CountWords.WcResult;
+
 public class CountWordsTest {
 
     @Test(dataProvider="countThingsTestDP")
-    public void countThings(String in, int[] expected) throws IOException {
-        int[] actual = CountWords.countThings(in);
+    public void countThings(String in, WcResult expected) throws IOException {
+        WcResult actual = CountWords.countThings(in);
         assertEquals(actual, expected);
     }
     
-    @Test(dataProvider="exceptionsTestDP", expectedExceptions = FileNotFoundException.class)
-    public void countThingsExceptions(String in, int[] expected) throws IOException {
-        int[] actual = CountWords.countThings(in);
-        assertEquals(actual, expected);
+    @Test(expectedExceptions = FileNotFoundException.class)
+    public void countThingsExceptions() throws IOException {
+        CountWords.countThings("");
     }
     
-    @DataProvider
-    Object[][] exceptionsTestDP() {
-        return new Object[][] {
-            {"", FileNotFoundException.class}, //i gotta sort this one out
-            //so far my solution for this is dont use a file that doesnt exist
-        };
-    }
+
     
     @DataProvider
     Object[][] countThingsTestDP() {
         return new Object[][] {
-            {"toberead", new int[]{3, 7, 33}},
+            {"toberead", new WcResult(3, 7, 35)},
+            {"src/test/resources/emptyfile", new WcResult(0, 0, 0)},
+            {"src/test/resources/justALetter", new WcResult(1, 1, 1)},
+            {"src/test/resources/justANewLine", new WcResult(2, 0, 1)},
         };
     }
 }
