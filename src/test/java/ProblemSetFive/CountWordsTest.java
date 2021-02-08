@@ -23,15 +23,13 @@ public class CountWordsTest {
         CountWords.countThings("");
     }
     
-
-    
     @DataProvider
     Object[][] countThingsTestDP() {
         return new Object[][] {
-            {"toberead", new WcResult(3, 7, 35)},
+            {"toberead", new WcResult(2, 7, 35)},
             {"src/test/resources/emptyfile", new WcResult(0, 0, 0)},
-            {"src/test/resources/justALetter", new WcResult(1, 1, 1)},
-            {"src/test/resources/justANewLine", new WcResult(2, 0, 1)},
+            {"src/test/resources/justALetter", new WcResult(0, 1, 1)},
+            {"src/test/resources/justANewLine", new WcResult(1, 0, 1)},
         };
     }
 }
