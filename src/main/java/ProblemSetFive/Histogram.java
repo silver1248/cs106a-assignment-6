@@ -3,6 +3,7 @@ package ProblemSetFive;
 public class Histogram {
 
     public static void main(String[] args) {
+        System.out.format("%16.2f\n",5.564654764);
         System.out.println(makeHistogram(new int[]{98, 47, 48, 10, 60, 20, 23}));
     }
     
@@ -18,12 +19,15 @@ public class Histogram {
             for (int j = 0; j < sorted[i]; j++) {
                 histogram.append("*");
             }
-            histogram.append("\n");
+            if (i != 9) {
+                histogram.append("\n");                
+            }
         }
         return histogram.toString();
     }
     
     public static int[] sortIntoRanges(int[] toBeSorted) {
+        //for loop i times 10 and hecc
         int[] histogramData = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         for (int i = 0; i < toBeSorted.length; i++) {
             if (toBeSorted[i] >= 0 && toBeSorted[i] <= 9) {
