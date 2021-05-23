@@ -28,13 +28,18 @@ public class FlightRoute {
                     if (startingCity.equals("lol")) {
                         System.out.format("Enter the starting City: %s\n", line);
                         startingCity = line;
+                        route = route.append(line);
                         System.out.println(makePretty((List<String>) printNext(convenience(), line)));
-                    }else if (startingCity.equals(line)) {
+                    } else if (startingCity.equals(line)) {
                         System.out.println("You have completed your round trip plan!");
+                        route = route.append(line);
+                        
+                        System.out.println("Your final route is " +finalRoute(route));
                     } else {
                         System.out.println("From there you can fly to:\n");
                         System.out.println(makePretty((List<String>) printNext(convenience(), line)));
                         System.out.format("Please choose one: %s\n", line);
+                        route = route.append(line);
                     }
                 } else {
                     System.out.println("We cant find that location please try again");
@@ -69,19 +74,8 @@ public class FlightRoute {
         return paths;
     } //gets where you can go to from any given place
 
-//    public static List<String> splitStrings(String split) {
-//        List<String> bothParts = List.empty();
-//        String divider = " -> ";
-//        String firstPart = split.substring(0, split.indexOf(divider));
-//        String secondPart = split.substring(split.indexOf(divider)+divider.length());
-//        System.out.println(firstPart + " " + secondPart);
-//        bothParts = bothParts.append(firstPart).append(secondPart);
-//        return bothParts;
-//    } 
-    //replaced by makePretty
-
     public static List<String> printKeys(Multimap<String, String> map) {
-        return map.keySet().toList();
+        return map.keySet().toSortedSet().toList();
     } //prints the starting cities
 
     public static Traversable<String> printNext(Multimap<String, String> map, String from) {
@@ -91,4 +85,8 @@ public class FlightRoute {
     public static String makePretty(List<String> list) {
         return list.intersperse(", ").fold("", (a, b) -> a+b);
     } //makes the lists from printKeys printNext, and getCities look better
+    
+    public static String finalRoute(List<String> list) {
+        return list.intersperse(" -> ").fold("", (a, b) -> a+b);
+    }
 }

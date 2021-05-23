@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import io.vavr.collection.HashMultimap;
 import io.vavr.collection.List;
 import io.vavr.collection.Multimap;
+import io.vavr.collection.Traversable;
 
 public class FlightRouteTest {
     
@@ -19,15 +20,9 @@ public class FlightRouteTest {
         new FlightRoute(); //for coverage
     }
 
-    @Test(dataProvider="printCitiesTestDP")
-    public void printCitiesTest(String in, List<String> expected) throws IOException {
+    @Test(dataProvider="getCitiesTestDP")
+    public void getCitiesTest(String in, List<String> expected) throws IOException {
         List<String> actual = FlightRoute.getCities(Paths.get(in)); //look up: paths.get vs path.of
-        assertEquals(actual, expected);
-    }
-
-    @Test(dataProvider="splitStringsTestDP")
-    public void splitStringsTest(String in, List<String> expected) {
-        List<String> actual = FlightRoute.splitStrings(in);
         assertEquals(actual, expected);
     }
     
@@ -36,9 +31,33 @@ public class FlightRouteTest {
         Multimap<String, String> actual = FlightRoute.possibleDestinations(in);
         assertEquals((Object)actual, expected);
     }
+    
+    @Test(dataProvider="printKeysTestDP")
+    public void printtKeysTest(Multimap<String, String> in, List<String> expected) {
+        List<String> actual = FlightRoute.printKeys(in);
+        assertEquals(actual, expected);
+    }
+    
+    @Test(dataProvider="printNextTestDP")
+    public void printNextTest(Multimap<String, String> in, String location, Traversable<String> expected) {
+        Traversable<String> actual = FlightRoute.printNext(in, location);
+        assertEquals(actual, expected);
+    }
+    
+    @Test(dataProvider="makePrettyTestDP")
+    public void makePrettyTest(List<String> in, String expected) {
+        String actual = FlightRoute.makePretty(in);
+        assertEquals(actual, expected);
+    }
+    
+    @Test(dataProvider="finalRouteTestDP")
+    public void finalRouteTest(List<String> in, String expected) {
+        String actual = FlightRoute.finalRoute(in);
+        assertEquals(actual, expected);
+    }
 
     @DataProvider
-    Object[][] printCitiesTestDP() {
+    Object[][] getCitiesTestDP() {
         return new Object[][] {
             {"src/test/resources/flights.txt", List.of(
                     "San Jose -> San Francisco",
@@ -55,15 +74,6 @@ public class FlightRouteTest {
                     "San Francisco -> New York",
                     "San Francisco -> Honolulu",
                     "San Francisco -> Denver")},
-        };
-    }
-
-    @DataProvider
-    Object[][] splitStringsTestDP() {
-        return new Object[][] {
-            {"San Jose -> San Francisco", List.of("San Jose", "San Francisco")},
-            {"San Jose -> Anchorage", List.of("San Jose", "Anchorage")},
-            {"New York -> Anchorage", List.of("New York", "Anchorage")},
         };
     }
 
@@ -101,5 +111,60 @@ public class FlightRouteTest {
                 .put("San Francisco", "Denver")}, //because we cast actual to object making it not an iterable
         }; // also i know this is ugly but it's the only way i could get it to work
     }
+    
+    @DataProvider
+    Object[][] printKeysTestDP() {
+        return new Object[][] {
+            {HashMultimap.withSet().of(
+            "San Jose", "San Francisco",
+            "San Jose", "Anchorage",
+            "New York", "Anchorage",
+            "New York", "San Jose",
+            "New York", "San Francisco",
+            "New York", "Honolulu",
+            "Anchorage", "New York",
+            "Anchorage", "San Jose",
+            "Honolulu", "New York",
+            "Honolulu", "San Francisco"), 
+                List.of("San Jose", "New York", "Anchorage", "Honolulu")
+                .toSortedSet().toList()} //added this line 
+            //in the hopes that it would remove the randomness of sets
+        };
+    } //dislike for sets edit: VICTORY
 
+    @DataProvider
+    Object[][] printNextTestDP() {
+        return new Object[][] {
+            {HashMultimap.withSet().of(
+            "San Jose", "San Francisco",
+            "San Jose", "Anchorage",
+            "New York", "Anchorage",
+            "New York", "San Jose",
+            "New York", "San Francisco",
+            "New York", "Honolulu",
+            "Anchorage", "New York",
+            "Anchorage", "San Jose",
+            "Honolulu", "New York",
+            "Honolulu", "San Francisco"), "San Jose",
+                (Traversable)List.of("San Francisco", "Anchorage")}
+        };
+    }
+    
+    @DataProvider
+    Object[][] makePrettyTestDP() {
+        return new Object[][] {
+            {List.of("egg", "caterpillar", "cacoon",
+                    "butterfly"), 
+                "egg, caterpillar, cacoon, butterfly"}
+        };
+    }
+    
+    @DataProvider
+    Object[][] finalRouteTestDP() {
+        return new Object[][] {
+            {List.of("egg", "caterpillar", "cacoon",
+                    "butterfly"), 
+            "egg -> caterpillar -> cacoon -> butterfly"}
+        };
+    }
 }
