@@ -3,15 +3,15 @@ package BinaryTree;
 import io.vavr.control.Option;
 
 public class Tree {
-    static Nodes topNode;
-    static Nodes nextNode;
+    static Node topNode;
+    static Node nextNode;
 
-    public Tree (Nodes node) {
+    public Tree (Node node) {
         Tree.topNode = node;
         Tree.nextNode = topNode;
     }
 
-    public static void add (Nodes node) {
+    public static void add (Node node) {
         if (nextNode.getValue() > node.getValue()) {
             if (Option.none().equals(nextNode.getLeft().getValue())) {
                 nextNode = nextNode.getLeft();
