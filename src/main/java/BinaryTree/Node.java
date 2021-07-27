@@ -13,7 +13,4 @@ public class Node<T extends Comparable<T>> {
         return new Node<T>(t, Option.none(), Option.none());
     }
 
-    public int compareTo(Node<T> other) {
-        return value.compareTo(other.value);
-    }
 }
