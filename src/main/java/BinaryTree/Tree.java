@@ -29,6 +29,34 @@ public class Tree <T extends Comparable<T>> {
         }
     }
 
+    public Option<Node<T>> median() {
+        return median(root, 0, 0);
+    }
+    private Option<Node<T>> median(Option<Node<T>> root2, int i, int j) {
+        if (root2.isEmpty()) {
+            return Option.none();
+        } else {
+            int leftCount = Node.count(root2.get().getLeft())+i;
+            int rightCount = Node.count(root2.get().getRight())+j;
+            int diff = rightCount - leftCount;
+            if (diff <= 1 && diff >= -1) {
+                return root2;
+            } else if (leftCount > rightCount){
+                return median(root2.get().getLeft(), 0, rightCount+1);
+            } else {
+                return median(root2.get().getRight(), leftCount+1, 0);
+            }
+        }
+    }
+
+    public Tree<T> rebalance () {
+        return new Tree<T>(rebalance(root));
+    }
+
+    public Option<Node<T>> rebalance (Option<Node<T>> root2) {
+        return null;
+    }
+
     public int depth () {
         return depth(root);
     }
@@ -42,16 +70,10 @@ public class Tree <T extends Comparable<T>> {
     }
 
     public int count () {
-        return count(root);
+        return Node.count(root);
     }
 
-    private int count(Option<Node<T>> root2) {
-        if (root2.isEmpty()) {
-            return 0;
-        } else {
-            return 1 + count(root2.get().getLeft()) + count(root2.get().getRight());
-        }
-    }
+
 
     public boolean exists(T t) {
         return exists(root, t);
@@ -65,54 +87,6 @@ public class Tree <T extends Comparable<T>> {
             return root2Node.getValue().equals(t) 
                     || exists(t.compareTo(root2Node.getValue()) < 0 ? root2Node.getLeft() : root2Node.getRight(), t);
         }
-    }
-
-    //    public static void add (Node node) {
-    //        if (nextNode.getValue() > node.getValue()) {
-    //            if (Option.none().equals(nextNode.getLeft().getValue())) {
-    //                nextNode = nextNode.getLeft();
-    //            }
-    //        } else if (nextNode.getValue() < node.getValue()) {
-    //            if (Option.none().equals(nextNode.getRight().getValue())) {
-    //                nextNode = nextNode.getRight();
-    //            }
-    //        }
-    //        add(nextNode);
-    //        nextNode = topNode;
-    //    }
-
-    public static void main(String[] args) {
-        //        Node<String> ns1 = Node.newNode("abc");
-        //        Node<String> ns2 = Node.newNode("abc");
-        //        Node<String> ns3 = Node.newNode("def");
-        //
-        //        System.out.println("ns1.getValue().compareTo(ns2.getValue()) = " + ns1.getValue().compareTo(ns2.getValue()));
-        //        System.out.println("ns1.getValue().compareTo(ns3.getValue()) = " + ns1.getValue().compareTo(ns3.getValue()));
-        //        System.out.println("ns2.getValue().compareTo(ns3.getValue()) = " + ns2.getValue().compareTo(ns3.getValue()));
-        //        System.out.println();
-        //        System.out.println("ns1.compareTo(ns2) = " + ns1.compareTo(ns2));
-        //        System.out.println("ns1.compareTo(ns3) = " + ns1.compareTo(ns3));
-        //        System.out.println("ns2.compareTo(ns3) = " + ns2.compareTo(ns3));
-        //        System.out.println();
-        //
-        //        Node<Integer> ni1 = Node.newNode(17);
-        //        Node<Integer> ni2 = Node.newNode(17);
-        //        Node<Integer> ni3 = Node.newNode(34);
-        //
-        //        System.out.println("ni1.getValue().compareTo(ni2.getValue()) = " + ni1.getValue().compareTo(ni2.getValue()));
-        //        System.out.println("ni1.getValue().compareTo(ni3.getValue()) = " + ni1.getValue().compareTo(ni3.getValue()));
-        //        System.out.println("ni2.getValue().compareTo(ni3.getValue()) = " + ni2.getValue().compareTo(ni3.getValue()));
-
-        Node<Integer> n2 = new Node<Integer>(2, Option.none(), Option.none());
-        Node<Integer> n10 =  new Node<Integer>(10, Option.none(), Option.none());
-        Node<Integer> n17 =  new Node<Integer>(17, Option.of(n10), Option.none());
-        Node<Integer> n3 = new Node<Integer>(3, Option.of(n2), Option.of(n17));
-        Tree<Integer> tree = new Tree<>(Option.of(n3));
-
-        System.out.println(tree.depth());
-        System.out.println(tree.count());
-        System.out.println(tree.add(12));
-        System.out.println(tree.add(12).exists(12));
     }
 
 }

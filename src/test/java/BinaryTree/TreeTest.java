@@ -1,6 +1,7 @@
 package BinaryTree;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -21,10 +22,52 @@ public class TreeTest {
 
     Tree<Integer> emptyTree = new Tree<>(Option.none());
 
+    Node<Integer> n20 = new Node<Integer>(20, Option.none(), Option.none());
+    Node<Integer> n72 = new Node<Integer>(72, Option.none(), Option.none());
+    Node<Integer> n85 = new Node<Integer>(85, Option.none(), Option.none());
+    Node<Integer> n21 = new Node<Integer>(21, Option.none(), Option.of(n20));
+    Node<Integer> n84 = new Node<Integer>(84, Option.of(n72), Option.of(n85));
+    Node<Integer> n23 = new Node<Integer>(23, Option.of(n21), Option.of(n84));
+    Node<Integer> n19 = new Node<Integer>(19, Option.of(n17), Option.of(n23));
+    Tree<Integer> complexTree = new Tree<Integer>(Option.of(n19));
+
     @Test (dataProvider="addTestDP")
     public void addTest(Tree<Integer> inTree, int in, Tree<Integer> expected) {
         Tree<Integer> actual = inTree.add(in);
         assertEquals(actual, expected);
+    }
+
+    @Test (dataProvider="medianTestDP")
+    public void medianTest(Tree<Integer> inTree, Option<Node<Integer>> expected) {
+        Option<Node<Integer>> actual = inTree.median();
+        assertEquals(actual, expected);
+    }
+
+    public boolean balanced(Option<Node<Integer>> in) {
+        if (in.isEmpty()) {
+            return true;
+        } else {
+            Option<Node<Integer>> left = in.get().getLeft();
+            Option<Node<Integer>> right = in.get().getRight();
+            int ncLeft = Node.count(left);
+            int ncRight = Node.count(right);
+            if (ncLeft - ncRight <= 1 && ncLeft- ncRight >= -1) {
+                return balanced(left) && balanced(right);
+            } else {
+                return false;
+            }
+        }
+    }
+
+
+    public boolean balanced(Tree<Integer> in) {
+        return balanced(in.getRoot());
+    }
+
+    @Test (dataProvider="rebalanceTestDP")
+    public void rebalanceTest(Tree<Integer> inTree, Tree<Integer> expected) {
+        Tree<Integer> actual = inTree.rebalance();
+        assertTrue(balanced(actual));
     }
 
     @Test(dataProvider="countTestDP")
@@ -58,7 +101,28 @@ public class TreeTest {
 
             {emptyTree, 185, new Tree<>(Option.of(Node.newNode(185)))},
         };
-    } 
+    }
+
+    @DataProvider
+    Object[][] medianTestDP() {
+        return new Object[][] {
+            {bigTree, Option.of(n3)},
+            {smallTree, Option.of(n4)},
+            {emptyTree, Option.none()},
+            {complexTree, Option.of(n21)},
+        };
+    }
+
+    @DataProvider
+    Object[][] rebalanceTestDP() {
+        return new Object[][] {
+            {bigTree, bigTree},
+            {smallTree, smallTree},
+            {emptyTree, emptyTree},
+            {complexTree, emptyTree.add(21).add(20).add(23).add(17).add(84).
+                add(10).add(19).add(72).add(85)},
+        };
+    }
 
     @DataProvider
     Object[][] countTestDP() {
