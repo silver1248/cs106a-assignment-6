@@ -25,7 +25,7 @@ public class TreeTest {
     Node<Integer> n20 = new Node<Integer>(20, Option.none(), Option.none());
     Node<Integer> n72 = new Node<Integer>(72, Option.none(), Option.none());
     Node<Integer> n85 = new Node<Integer>(85, Option.none(), Option.none());
-    Node<Integer> n21 = new Node<Integer>(21, Option.none(), Option.of(n20));
+    Node<Integer> n21 = new Node<Integer>(21, Option.of(n20), Option.none());
     Node<Integer> n84 = new Node<Integer>(84, Option.of(n72), Option.of(n85));
     Node<Integer> n23 = new Node<Integer>(23, Option.of(n21), Option.of(n84));
     Node<Integer> n19 = new Node<Integer>(19, Option.of(n17), Option.of(n23));
