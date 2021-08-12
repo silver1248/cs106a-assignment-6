@@ -1,8 +1,11 @@
 package BinaryTree;
 
+import io.vavr.collection.List;
 import io.vavr.control.Option;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Value
 public class Tree<T extends Comparable<T>> {
     Option<Node<T>> root;
@@ -53,11 +56,54 @@ public class Tree<T extends Comparable<T>> {
     }
 
     public Tree<T> rebalance() {
-        return new Tree<T>(rebalance(root));
+        if (root.isEmpty()) {
+            return new Tree<>(Option.none());
+        } else {
+            List<T> list = toList();
+            return new Tree<T>(rebalance(root, list, 0, list.length()-1));
+        }
     }
 
-    public Option<Node<T>> rebalance(Option<Node<T>> root2) {
-        return null;
+    private Option<Node<T>> rebalance(Option<Node<T>> root2, List<T> inList, int low, int high) {
+        if (high == low) {
+            return Option.of(Node.newNode(inList.get(low)));
+        } else {
+            int average = (high+low)/2;
+            log.debug("value = {}, average = {}, low = {}, high = {}, list = {}"
+                    , root2.get().getValue(), average, low, high, inList);
+
+            Node<T> rebalanced = new Node<T>(inList.get(average)
+                    , maybeRebalance(root2, inList, low, average-1)
+                    , maybeRebalance(root2, inList, average+1, high));
+            return Option.of(rebalanced);
+        }
+    }
+
+    private Option<Node<T>> maybeRebalance(Option<Node<T>> root2, List<T> inList, int low, int high) {
+        log.debug("MBR value = {}, low = {}, high = {}, list = {}"
+                , root2.get().getValue(), low, high, inList);
+        if (high < low) {
+            return Option.none();
+        } else {
+            return rebalance(root2, inList, low, high);
+        }
+    }
+
+    public List<T> toList() {
+        return toList(root);
+    }
+
+    private List<T> toList(Option<Node<T>> root2) {
+        if (root2.isEmpty()) {
+            return List.empty();
+        } else {
+            return toList(root2.get().getRight()).prepend(root2.get().getValue())
+                    .prependAll(toList(root2.get().getLeft()));
+        }
+    }
+
+    public T median(List<T> in) {
+        return in.get(in.length()/2);
     }
 
     public int depth() {

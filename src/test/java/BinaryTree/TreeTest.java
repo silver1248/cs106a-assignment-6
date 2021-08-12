@@ -6,6 +6,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import io.vavr.collection.List;
 import io.vavr.control.Option;
 
 public class TreeTest {
@@ -36,11 +37,38 @@ public class TreeTest {
         Tree<Integer> actual = inTree.add(in);
         assertEquals(actual, expected);
     }
+    @DataProvider
+    Object[][] addTestDP() {
+        return new Object[][] {
+            {bigTree, 17, bigTree},
+            {bigTree, 3, bigTree},
+
+            {bigTree, 1, new Tree<>(Option.of(new Node<Integer>(3, Option.of(new Node<Integer>(2, Option.of(Node.newNode(1)), Option.none())), Option.of(n17))))},
+            {bigTree, 83, new Tree<>(Option.of(new Node<Integer>(3, Option.of(n2), Option.of(new Node<Integer>(17, Option.of(n10), Option.some(Node.newNode(83)))))))},
+
+            {smallTree, 4, smallTree},
+
+            {smallTree, 2, new Tree<>(Option.of(new Node<Integer>(4, Option.of(Node.newNode(2)), Option.none())))},
+            {smallTree, 19, new Tree<>(Option.of(new Node<Integer>(4, Option.none(), Option.some(Node.newNode(19)))))},
+
+            {emptyTree, 185, new Tree<>(Option.of(Node.newNode(185)))},
+        };
+    }
 
     @Test (dataProvider="medianTestDP")
     public void medianTest(Tree<Integer> inTree, Option<Node<Integer>> expected) {
         Option<Node<Integer>> actual = inTree.median();
         assertEquals(actual, expected);
+    }
+
+    @DataProvider
+    Object[][] medianTestDP() {
+        return new Object[][] {
+            {bigTree, Option.of(n3)},
+            {smallTree, Option.of(n4)},
+            {emptyTree, Option.none()},
+            {complexTree, Option.of(n21)},
+        };
     }
 
     public boolean balanced(Option<Node<Integer>> in) {
@@ -70,49 +98,6 @@ public class TreeTest {
         assertTrue(balanced(actual));
     }
 
-    @Test(dataProvider="countTestDP")
-    public void countTest(Tree<Integer> inTree, int expected) {
-        assertEquals(inTree.count(), expected);
-    }
-
-    @Test (dataProvider="depthTestDP")
-    public void depthTest(Tree<Integer> inTree, int expected) {
-        assertEquals(inTree.depth(), expected);
-    }
-
-    @Test (dataProvider="existsTestDP")
-    public void existsTest(Tree<Integer> inTree, int in, boolean expected) {
-        assertEquals(inTree.exists(in), expected);
-    }
-
-    @DataProvider
-    Object[][] addTestDP() {
-        return new Object[][] {
-            {bigTree, 17, bigTree},
-            {bigTree, 3, bigTree},
-
-            {bigTree, 1, new Tree<>(Option.of(new Node<Integer>(3, Option.of(new Node<Integer>(2, Option.of(Node.newNode(1)), Option.none())), Option.of(n17))))},
-            {bigTree, 83, new Tree<>(Option.of(new Node<Integer>(3, Option.of(n2), Option.of(new Node<Integer>(17, Option.of(n10), Option.some(Node.newNode(83)))))))},
-
-            {smallTree, 4, smallTree},
-
-            {smallTree, 2, new Tree<>(Option.of(new Node<Integer>(4, Option.of(Node.newNode(2)), Option.none())))},
-            {smallTree, 19, new Tree<>(Option.of(new Node<Integer>(4, Option.none(), Option.some(Node.newNode(19)))))},
-
-            {emptyTree, 185, new Tree<>(Option.of(Node.newNode(185)))},
-        };
-    }
-
-    @DataProvider
-    Object[][] medianTestDP() {
-        return new Object[][] {
-            {bigTree, Option.of(n3)},
-            {smallTree, Option.of(n4)},
-            {emptyTree, Option.none()},
-            {complexTree, Option.of(n21)},
-        };
-    }
-
     @DataProvider
     Object[][] rebalanceTestDP() {
         return new Object[][] {
@@ -124,6 +109,25 @@ public class TreeTest {
         };
     }
 
+    @Test (dataProvider="toListTestDP")
+    public void toListTest(Tree<Integer> inTree, List<Integer> expected) {
+        List<Integer> actual = inTree.toList();
+        assertEquals(actual, expected);
+    }
+
+    @DataProvider
+    Object[][] toListTestDP() {
+        return new Object[][] {
+            {bigTree, List.of(2, 3, 10, 17)},
+            {complexTree, List.of(10, 17, 19, 20, 21, 23, 72, 84, 85)},
+        };
+    }
+
+    @Test(dataProvider="countTestDP")
+    public void countTest(Tree<Integer> inTree, int expected) {
+        assertEquals(inTree.count(), expected);
+    }
+
     @DataProvider
     Object[][] countTestDP() {
         return new Object[][] {
@@ -133,6 +137,11 @@ public class TreeTest {
         };
     }
 
+    @Test (dataProvider="depthTestDP")
+    public void depthTest(Tree<Integer> inTree, int expected) {
+        assertEquals(inTree.depth(), expected);
+    }
+
     @DataProvider
     Object[][] depthTestDP() {
         return new Object[][] {
@@ -140,6 +149,11 @@ public class TreeTest {
             {smallTree, 1},
             {emptyTree, 0},
         };
+    }
+
+    @Test (dataProvider="existsTestDP")
+    public void existsTest(Tree<Integer> inTree, int in, boolean expected) {
+        assertEquals(inTree.exists(in), expected);
     }
 
     @DataProvider
