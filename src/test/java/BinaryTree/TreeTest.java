@@ -173,4 +173,22 @@ public class TreeTest {
             {emptyTree, 9, false},
         };
     }
+
+    @Test (dataProvider="getPreviousTestDP")
+    public void getPreviousTest(Tree<Integer> inTree, int in, Option<List<Integer>> expected) {
+        assertEquals(inTree.getPrevious(in), expected);
+    }
+
+    @DataProvider
+    Object[][] getPreviousTestDP() {
+        return new Object[][] {
+            {emptyTree, 3, Option.none()},                          //this tree has no elements
+            {smallTree, 3, Option.none()},                          //this tree doesn't have the element
+
+            {bigTree, 17, Option.of(List.of(3, 17))},               //this node has 1 child
+            {complexTree, 20, Option.of(List.of(19, 23, 21, 20))},  //this node is a leaf
+            {smallTree, 4, Option.of(List.of(4))},                  //this node is a root w/o children
+            {complexTree, 19, Option.of(List.of(19))},              //this node is a root w/ children
+        };
+    }
 }

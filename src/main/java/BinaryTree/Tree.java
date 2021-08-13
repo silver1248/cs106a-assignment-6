@@ -132,7 +132,29 @@ public class Tree<T extends Comparable<T>> {
         } else {
             Node<T> root2Node = root2.get();
             return root2Node.getValue().equals(t)
-                    || exists(t.compareTo(root2Node.getValue()) < 0 ? root2Node.getLeft() : root2Node.getRight(), t);
+                    || exists(t.compareTo(root2Node.getValue()) < 0 
+                            ? root2Node.getLeft() : root2Node.getRight(), t);
+        }
+    }
+
+    public Option<List<T>> getPrevious(T t) {
+        return getPrevious(root, t);
+    }
+
+    private Option<List<T>> getPrevious(Option<Node<T>> root2, T t) {
+        if (root2.isEmpty()) {
+            return Option.none();
+        } else {
+            Node<T> root2Node = root2.get();
+            int compare = t.compareTo(root2Node.getValue());
+            if (0 == compare) {
+                return Option.of(List.of(root2Node.getValue()));
+            } else {
+                return getPrevious(
+                           (0 > compare) ? root2Node.getLeft() : root2Node.getRight()
+                           , t)
+                       .map(l -> l.prepend(root2Node.getValue()));
+            }
         }
     }
 
