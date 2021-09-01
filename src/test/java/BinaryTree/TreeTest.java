@@ -3,9 +3,12 @@ package BinaryTree;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.util.function.Function;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 
@@ -15,13 +18,13 @@ public class TreeTest {
     Node<Integer> n10 =  new Node<Integer>(10, Option.none(), Option.none());
     Node<Integer> n17 =  new Node<Integer>(17, Option.of(n10), Option.none());
     Node<Integer> n3 = new Node<Integer>(3, Option.of(n2), Option.of(n17));
-    Tree<Integer> bigTree = new Tree<>(Option.of(n3));
+    Tree<Integer> bigTree = new Tree<Integer>(Option.of(n3));
 
 
     Node<Integer> n4 = new Node<Integer>(4, Option.none(), Option.none());
-    Tree<Integer> smallTree = new Tree<>(Option.of(n4));
+    Tree<Integer> smallTree = new Tree<Integer>(Option.of(n4));
 
-    Tree<Integer> emptyTree = new Tree<>(Option.none());
+    Tree<Integer> emptyTree = new Tree<Integer>(Option.none());
 
     Node<Integer> n20 = new Node<Integer>(20, Option.none(), Option.none());
     Node<Integer> n72 = new Node<Integer>(72, Option.none(), Option.none());
@@ -189,6 +192,49 @@ public class TreeTest {
             {complexTree, 20, Option.of(List.of(19, 23, 21, 20))},  //this node is a leaf
             {smallTree, 4, Option.of(List.of(4))},                  //this node is a root w/o children
             {complexTree, 19, Option.of(List.of(19))},              //this node is a root w/ children
+        };
+    }
+
+    @Test (dataProvider="lastCommonAncestorTestDP")
+    public void lastCommonAncestorTest(Tree<Integer> inTree, int in1, int in2, Option<Integer> expected) {
+        assertEquals(inTree.lastCommonAncestor(in1, in2), expected);
+    }
+
+    @DataProvider
+    Object[][] lastCommonAncestorTestDP() {
+        return new Object[][] {
+            {emptyTree, 3, 5, Option.none()},                      //this tree has no elements
+
+            {smallTree, 4, 4, Option.of(4)},                       //this tree has only a 4 as the root
+            {bigTree, 10, 2, Option.of(3)},                        //the second node is the root
+            {complexTree, 85, 72, Option.of(84)},                  //these nodes are both directly below 21
+            {complexTree, 21, 72, Option.of(23)},                  /*one of these is directly below 19 and 
+                                                                    the other one is as far as it can get while
+                                                                    still connecting to it*/
+        };
+    }
+
+    @Test (dataProvider="mapTestDP")
+    public void mapTest(Tree<Integer> inTree
+            , Function <Integer, String> mapper
+            , Tree<String> expected) {
+        assertEquals(inTree.map(mapper), expected);
+    }
+
+    @DataProvider
+    Object[][] mapTestDP() {
+        Function1<Integer, String> mapper = x -> x.toString();       //yes having to do this is annoying no it doesn't work like it should yes i tried
+        Node<String> ns2 = new Node<String>("2", Option.none(), Option.none());
+        Node<String> ns10 =  new Node<String>("10", Option.none(), Option.none());
+        Node<String> ns17 =  new Node<String>("17", Option.of(ns10), Option.none());
+        Node<String> ns3 = new Node<String>("3", Option.of(ns2), Option.of(ns17));
+
+        Node<String> ns4 = new Node<String>("4", Option.none(), Option.none());
+        return new Object[][] {
+            {emptyTree, mapper, new Tree<String>(Option.none())},                      //this tree has no elements
+
+            {smallTree, mapper, new Tree<String>(Option.of(ns4))},                     //this tree has only a 4 as the root
+            {bigTree, mapper, new Tree<String>(Option.of(ns3))},                       //this tree has only 4 elements
         };
     }
 }

@@ -1,5 +1,7 @@
 package BinaryTree;
 
+import java.util.function.Function;
+
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import lombok.Value;
@@ -151,10 +153,48 @@ public class Tree<T extends Comparable<T>> {
                 return Option.of(List.of(root2Node.getValue()));
             } else {
                 return getPrevious(
-                           (0 > compare) ? root2Node.getLeft() : root2Node.getRight()
-                           , t)
-                       .map(l -> l.prepend(root2Node.getValue()));
+                        (0 > compare) ? root2Node.getLeft() : root2Node.getRight()
+                                , t)
+                        .map(l -> l.prepend(root2Node.getValue()));
             }
+        }
+    }
+
+    public Option<T> lastCommonAncestor (T t, T t2) {
+        return lastCommonAncestor(root, t, t2);
+    }
+
+    private Option<T> lastCommonAncestor(Option<Node<T>> root2, T t, T t2) {
+        Option<List<T>> previous1 = getPrevious(t);
+        Option<List<T>> previous2 = getPrevious(t2);
+        if (previous1.isEmpty() || previous2.isEmpty()) {
+            return Option.none();
+        } else {
+            T lca = previous1.get().get(0);
+            for (int i = 0; i < previous1.get().length()-1; i++) {
+                if (!previous2.get().contains(previous1.get().get(i)) || i== previous1.get().length()-1) {
+                    System.out.println(lca);
+                    break;
+                } else {
+                    lca = previous1.get().get(i);
+                    System.out.println(lca);
+                }
+            }
+            return Option.of(lca);
+        }
+    }
+    <U extends Comparable<U>> Tree<U> map(Function<T, U> mapper) {
+        return new Tree<>(map(root, mapper));
+    }
+
+    <U extends Comparable<U>> Option<Node<U>> map(Option<Node<T>> root2, Function <T, U> mapper) {
+        if (root2.isEmpty()) {
+            return Option.none();
+        } else {
+            Node<T> root2Node = root2.get();
+            return Option.of(new Node<U>(mapper.apply(root2Node.getValue())
+                    , map(root2Node.getLeft(), mapper)
+                    , map(root2Node.getRight(), mapper)));
         }
     }
 
